@@ -10,7 +10,8 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
-import { useSession, signIn, signOut } from "next-auth/react";
+
+import { signIn, signOut, useSession } from "@/lib/auth-client";
 
 import Container from "./container";
 import Logo from "./logo";
@@ -23,17 +24,20 @@ import { Link } from "@/navigation";
 export default function Header({ className }: { className?: string }) {
   const t = useTranslations("header");
   const locale = useLocale();
-  const { data: session, status } = useSession();
+  const { data: session, isPending } = useSession();
 
   const isManager =
     session?.user?.id && AppConfig.manageUsers.includes(session.user.id);
 
-  const handleSignIn = () => {
-    signIn(undefined, { callbackUrl: `/${locale}/submit` });
+  const handleSignIn = async () => {
+    // Redirect to Better Auth signin page
+    const baseUrl = process.env.NEXT_PUBLIC_BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL;
+    const signinUrl = `${baseUrl}/signin?callbackURL=${encodeURIComponent(process.env.NEXT_PUBLIC_APP_URL + `/${locale}/submit`)}`;
+    window.location.href = signinUrl;
   };
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: "/" });
+    signOut();
   };
 
   return (
@@ -50,7 +54,7 @@ export default function Header({ className }: { className?: string }) {
         </Link>
         <LanguageSwitcher />
         <ThemeSwitcher />
-        {status === "loading" ? (
+        {isPending ? (
           <div className="w-8 h-8 animate-pulse bg-gray-200 rounded-full" />
         ) : !session ? (
           <>
@@ -66,7 +70,7 @@ export default function Header({ className }: { className?: string }) {
               className="font-semibold"
               size="sm"
               variant="bordered"
-              onClick={() => signIn()}
+              onClick={handleSignIn}
             >
               {t("login")}
             </Button>
@@ -113,6 +117,6 @@ export default function Header({ className }: { className?: string }) {
           </>
         )}
       </div>
-    </Container>
+    </Container >
   );
 }

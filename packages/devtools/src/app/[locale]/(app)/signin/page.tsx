@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { auth } from "@/auth";
+import { getSession } from "@/lib/actions";
 import { redirect } from "next/navigation";
 
 import Container from "@/components/common/container";
@@ -21,16 +21,21 @@ export async function generateMetadata({
   };
 }
 
-export default async function SignIn() {
-  const session = await auth();
+export default async function SignIn({
+  searchParams,
+}: {
+  searchParams: { callbackURL?: string };
+}) {
+  const session = await getSession();
 
   if (session) {
-    redirect("/");
+    // If user is already signed in, redirect to callback URL or home
+    redirect(searchParams.callbackURL || "/");
   }
 
   return (
     <Container>
-      <SignInForm />
+      <SignInForm callbackURL={searchParams.callbackURL} />
     </Container>
   );
 }

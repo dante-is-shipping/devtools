@@ -1,6 +1,6 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { useSession } from "next-auth/react"
+import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { useEffect } from "react";
@@ -8,25 +8,43 @@ import Logo from "@/components/common/logo";
 import { ThemeSwitcher } from "@/components/common/theme-switcher";
 import { Link, usePathname } from "@/navigation";
 import LanguageSwitcher from "@/components/common/language-switcher";
+import { AppConfig } from "@/lib/config";
 
 export default function DashbpardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session, status } = useSession()
+  const { data: session, isPending } = useSession();
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("dashboard");
+
+  // Check if user is a manager
+  const isManager = session?.user?.id && AppConfig.manageUsers.includes(session.user.id);
+
   useEffect(() => {
-    if (status === "loading") return;
+    if (isPending) return;
+    
     if (!session) {
       router.push("/signin");
+      return;
     }
-  }, [session, status, router]);
 
-  if (status === "loading") {
+    // Check if user is authorized to access dashboard
+    if (!isManager) {
+      router.push("/"); // Redirect to home page if not a manager
+      return;
+    }
+  }, [session, isPending, isManager, router]);
+
+  if (isPending) {
     return <div>Loading...</div>;
+  }
+
+  // Don't render dashboard if user is not authenticated or not a manager
+  if (!session || !isManager) {
+    return null;
   }
 
   const menus = [

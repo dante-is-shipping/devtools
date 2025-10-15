@@ -4,7 +4,7 @@ import { ThumbsUpIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useSession, signIn } from "next-auth/react";
+import { signIn, useSession } from "@/lib/auth-client";
 import clsx from "clsx";
 
 import { Site } from "@/models/site";
@@ -57,7 +57,12 @@ export default function VoteButton({ site }: { site: Site }) {
       radius="md"
       size="md"
       variant={isUpvoted ? "solid" : "bordered"}
-      onClick={session ? triggerUpvote : () => signIn()}
+      onClick={session ? triggerUpvote : async () => {
+        // Redirect to Better Auth signin page
+        const baseUrl = process.env.NEXT_PUBLIC_BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || '';
+        const signinUrl = `${baseUrl}/signin?callbackURL=${encodeURIComponent(process.env.NEXT_PUBLIC_APP_URL || '')}`;
+        window.location.href = signinUrl;
+      }}
     >
       <ThumbsUpIcon size={14} strokeWidth={2.5} />
       {t("upvote")}

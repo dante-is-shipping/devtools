@@ -1,10 +1,14 @@
 "use client";
 import { Button } from "@nextui-org/react";
-import { signIn } from "next-auth/react";
+import { signIn } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
-export default function SignInForm() {
+interface SignInFormProps {
+  callbackURL?: string;
+}
+
+export default function SignInForm({ callbackURL }: SignInFormProps) {
   const t = useTranslations("signin");
 
   return (
@@ -15,12 +19,17 @@ export default function SignInForm() {
         <Button
           className="w-full"
           variant="bordered"
-          onClick={() => signIn("google")}
+          onClick={async () => {
+            await signIn.social({
+              provider: "google",
+              callbackURL: callbackURL || process.env.NEXT_PUBLIC_APP_URL,
+            });
+          }}
         >
           <Image src="/social-icons/google.svg" alt="Google" width={20} height={20} />
           {t("continueWithGoogle")}
         </Button>
       </div>
-    </div>
+    </div >
   );
 }

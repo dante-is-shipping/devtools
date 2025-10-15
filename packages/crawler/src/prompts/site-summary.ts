@@ -26,7 +26,7 @@ Provide a comprehensive website analysis JSON output that includes detailed intr
 6. Generate 5 search suggest words for similar websites to this website.
 7. Attempt to extract the website's own links, including the login page, registration page, documentation page, and pricing page. For pages that do not exist, set them to null.
 8. Generate a very detailed introduction for website promotion, including its Website Positioning, Target Audience, Core Features, Content Features, User Experience, Technical Features, and other information, with a minimum of 400 words but not more than 500 words.
-9. Generate a concise and engaging shareText for Twitter sharing, highlighting the website's key value proposition and main features. The shareText must not exceed 200 characters and should be compelling enough to encourage clicks and engagement.
+9. Generate a concise and engaging shareText for Twitter sharing, highlighting the website's key value proposition and main features. The shareText must not exceed 250 characters (including hashtags), should be compelling enough to encourage clicks and engagement, and must include 2-4 relevant hashtags that align with the website's category, target audience, or key features. Hashtags should be strategically placed to maximize discoverability while maintaining readability.
 
 ## Output Format
 The output should be a directly parsable JSON string with the following TypeScript definition:

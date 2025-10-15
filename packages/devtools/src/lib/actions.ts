@@ -13,6 +13,7 @@ import { Review, ReviewDocument, ReviewModel } from "@/models/review";
 import { UpvoteModel, UpvoteType } from "@/models/upvote";
 import { Category, CategoryDocument, CategoryModel } from "@/models/category";
 
+import { headers } from "next/headers";
 function siteToObject(site: SiteDocument) {
   const siteObj = site.toObject();
 
@@ -770,7 +771,14 @@ export async function getAllCategories() {
     throw error;
   }
 }
+
+export async function getSession() {
+  return await auth.api.getSession({
+    headers: await headers(),
+  });
+}
+
 export async function currentUser() {
-  const session = await auth();
+  const session = await getSession();
   return session?.user;
 }
